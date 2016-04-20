@@ -22,11 +22,19 @@ def read_company company, sector, sub_sector
     symbol = symbol.to_s
     pe = pe.to_s
 
+    if pe.eql? "NA"
+        return
+    end
+
     key_statistics = Nokogiri::HTML(open("http://finance.yahoo.com/q/ks?s=#{symbol}+Key+Statistics"))
 
     market_value = key_statistics.css("#yfi_rt_quote_summary").css("div")[4].css("span")[0].text
 
-    book_value_per_share = key_statistics.css("table")[18].css("tr")[7].css("td")[1]
+    if market_value.split(',').join.to_f > 10
+        return
+    end
+
+    book_value_per_share = key_statistics.css("table")[18].css("tr")[7].css("td")[1].text
 
     company_hash = {
         "name" => name,
@@ -38,7 +46,9 @@ def read_company company, sector, sub_sector
         "book_value_per_share" => book_value_per_share
     }
 
-    puts company_hash
+    if book_value_per_share.to_f > market_value.to_f
+        puts company_hash
+    end
 
     return pe.to_f
 end
