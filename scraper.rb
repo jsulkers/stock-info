@@ -46,27 +46,37 @@ def read_company company, sector, sub_sector
         "book_value_per_share" => book_value_per_share
     }
 
-    if book_value_per_share.to_f > market_value.to_f
-        puts company_hash
-    end
+    puts "Company hash:\n" + company_hash.to_json
 
-    return pe.to_f
+    if book_value_per_share.to_f > market_value.to_f
+        return company_hash
+    end
 end
 
 def read_companies companies, sector, sub_sector
     companies.shift
 
-    num = 0
-    total = 0
+    companies_array = []
 
     companies.each do |company|
-        read_company company, sector, sub_sector
+        company_hash = read_company company, sector, sub_sector
+
+        if !company_hash.nil?
+            companies_array << company_hash
+        end
     end
+
+    puts "Companies array:\n" + companies_array.to_json
+
+    return companies_array
+
 end
 
 def read_sub_sector sub_sector, sector
     link = sub_sector.css("td a")
     
+    companies = {}
+
     if !link[0].nil?
         name = link[0].text + "\n"
         href = link[0]['href']
@@ -80,16 +90,36 @@ def read_sub_sector sub_sector, sector
         4.times {
             companies.shift
         }
-
-        read_companies companies, sector, name
+        
+        companies = read_companies companies, sector, name
     end
+
+    puts "Sector: #{sector}"
+
+    puts "Companies:\n" + companies.to_json
+
+    sector_hash = {
+        "#{sector}" => companies
+    }
+
+    return sector_hash
 
 end
 
 def read_sub_sectors sub_sectors, sector
+    
+    pulled_sub_sectors = []
+
     sub_sectors.each do |sub_sector|
-        read_sub_sector sub_sector, sector
+        pulled_sub_sectors << read_sub_sector(sub_sector, sector)
     end
+
+    json_sub_sectors = {
+        "#{sector}" => pulled_sub_sectors
+    }
+
+    puts "sector ------>  " + json_sub_sectors.to_json
+    return sub_sectors
 end
 
 def read_sector sector_href
@@ -101,17 +131,32 @@ def read_sector sector_href
 
     sector_doc = Nokogiri::HTML(open("https://biz.yahoo.com/p/#{href}"))
 
-    sub_sectors = read_doc sector_doc
+    sub_sectors = read_doc(sector_doc)
 
-    read_sub_sectors sub_sectors, name
+    pulled_sub_sectors  = {
+        "#{name}" => pulled_sub_sectors
+    }
+
+    puts "Name: #{name}\n"
+
+    return read_sub_sectors(sub_sectors, name)
 end
 
 def read_sectors sectors
     sectors.shift
 
+    pulled_sectors = []
+
     sectors.each do |sector|
-        read_sector sector
-    end    
+        pulled_sectors << read_sector(sector)
+    end
+
+    stocks = {
+        "all" => pulled_sectors
+    }
+
+    @file = File.open("stocks.json", 'w') 
+    @file.write(stocks.to_json)
 end
 
 doc = Nokogiri::HTML(open("https://biz.yahoo.com/p/s_conameu.html"))    
