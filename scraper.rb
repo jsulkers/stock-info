@@ -30,7 +30,7 @@ def read_company company, sector, sub_sector
 
     market_value = key_statistics.css("#yfi_rt_quote_summary").css("div")[4].css("span")[0].text
 
-    if market_value.split(',').join.to_f > 10
+    if market_value.split(',').join.to_f > 5
         return
     end
 
@@ -46,7 +46,7 @@ def read_company company, sector, sub_sector
         "book_value_per_share" => book_value_per_share
     }
 
-    puts "Company hash:\n" + company_hash.to_json
+    puts "CompanyHash: " + company_hash.to_json
 
     if book_value_per_share.to_f > market_value.to_f
         return company_hash
@@ -66,8 +66,6 @@ def read_companies companies, sector, sub_sector
         end
     end
 
-    puts "Companies array:\n" + companies_array.to_json
-
     return companies_array
 
 end
@@ -75,7 +73,7 @@ end
 def read_sub_sector sub_sector, sector
     link = sub_sector.css("td a")
     
-    companies = {}
+    companies = []
 
     if !link[0].nil?
         name = link[0].text + "\n"
@@ -91,15 +89,13 @@ def read_sub_sector sub_sector, sector
             companies.shift
         }
         
-        companies = read_companies companies, sector, name
+        companies = read_companies(companies, sector, name)
     end
-
-    puts "Sector: #{sector}"
 
     puts "Companies:\n" + companies.to_json
 
     sector_hash = {
-        "#{sector}" => companies
+        "#{name}" => companies
     }
 
     return sector_hash
@@ -114,12 +110,7 @@ def read_sub_sectors sub_sectors, sector
         pulled_sub_sectors << read_sub_sector(sub_sector, sector)
     end
 
-    json_sub_sectors = {
-        "#{sector}" => pulled_sub_sectors
-    }
-
-    puts "sector ------>  " + json_sub_sectors.to_json
-    return sub_sectors
+    return pulled_sub_sectors
 end
 
 def read_sector sector_href
@@ -133,13 +124,14 @@ def read_sector sector_href
 
     sub_sectors = read_doc(sector_doc)
 
-    pulled_sub_sectors  = {
+    pulled_sub_sectors = read_sub_sectors(sub_sectors, name)
+
+    sub_sectors_hash  = {
         "#{name}" => pulled_sub_sectors
     }
 
-    puts "Name: #{name}\n"
-
-    return read_sub_sectors(sub_sectors, name)
+    return sub_sectors_hash
+    
 end
 
 def read_sectors sectors
@@ -152,7 +144,7 @@ def read_sectors sectors
     end
 
     stocks = {
-        "all" => pulled_sectors
+        "Sectors" => pulled_sectors
     }
 
     @file = File.open("stocks.json", 'w') 
