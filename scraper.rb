@@ -28,13 +28,62 @@ def read_company company, sector, sub_sector
 
     key_statistics = Nokogiri::HTML(open("http://finance.yahoo.com/q/ks?s=#{symbol}+Key+Statistics"))
 
-    market_value = key_statistics.css("#yfi_rt_quote_summary").css("div")[4].css("span")[0].text
+    market_value = key_statistics.css("#yfi_rt_quote_summary").css("div")[4].css("span")[0].text.split(',').join.to_f
 
-    if market_value.split(',').join.to_f > 5
+    if market_value > 2
         return
     end
 
-    book_value_per_share = key_statistics.css("table")[18].css("tr")[7].css("td")[1].text
+    book_value_per_share = key_statistics.css("table")[18].css("tr")[7].css("td")[1].text.split(',').join.to_f
+
+    if book_value_per_share < market_value
+        return
+    end
+
+    if market_value.to_f > (book_value_per_share * 0.66)
+        return
+    end
+
+    percentage_of_book_value = (market_value.to_f / book_value_per_share.to_f).round(2)
+
+    income_statement = Nokogiri::HTML(open("http://finance.yahoo.com/q/bs?s=#{symbol}+Balance+Sheet&annual"))
+
+    strong_elements = income_statement.css("strong")
+
+    assets_2015 = strong_elements[7].text.split(',').join.to_f unless strong_elements[7].nil?
+    liabilities_2015 = strong_elements[16].text.split(',').join.to_f unless strong_elements[16].nil?
+
+    if assets_2015.nil? || liabilities_2015.nil?
+        return
+    end
+
+    if (assets_2015 - (2.0 * liabilities_2015)) < 0
+        return
+    end
+    
+    assets_2014 = strong_elements[8].text.split(',').join.to_f
+    assets_2013 = strong_elements[9].text.split(',').join.to_f
+
+    if assets_2015.nil? || assets_2015 < 0
+        return
+    end
+
+    average_assets = 0
+    difference_to_average = 0
+    
+    if !assets_2014.nil? && !assets_2013.nil?
+        average_assets = ((assets_2015 + assets_2014 + assets_2013) / 3).round(2)
+
+        difference_to_average = (assets_2015 - average_assets).round(2)
+    end
+
+    if difference_to_average <= 0
+        return
+    end
+
+    profile = Nokogiri::HTML(open("http://finance.yahoo.com/q/pr?s=#{symbol}+Profile"))
+
+    website = profile.css("table a")[1].text unless profile.css("table a")[1].nil?
 
     company_hash = {
         "name" => name,
@@ -43,14 +92,17 @@ def read_company company, sector, sub_sector
         "pe" => pe,
         "sector" => sector,
         "sub_sector" => sub_sector,
-        "book_value_per_share" => book_value_per_share
+        "book_value_per_share" => book_value_per_share,
+        "percentage_of_book_value" => percentage_of_book_value,
+        "assets_2015" => assets_2015,
+        "liabilities_2015" => liabilities_2015,
+        "difference_to_average" => difference_to_average,
+        "website" => website
     }
 
     puts "CompanyHash: " + company_hash.to_json
 
-    if book_value_per_share.to_f > market_value.to_f
-        return company_hash
-    end
+    return company_hash
 end
 
 def read_companies companies, sector, sub_sector
@@ -91,8 +143,6 @@ def read_sub_sector sub_sector, sector
         
         companies = read_companies(companies, sector, name)
     end
-
-    puts "Companies:\n" + companies.to_json
 
     sector_hash = {
         "#{name}" => companies
