@@ -1,0 +1,28 @@
+<html>
+   <head>
+      <title>The jQuery Example</title>
+      <script type = "text/javascript" 
+         src = "http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+<div id="stocks"></div>
+
+      <script type = "text/javascript">
+         $(document).ready(function(){
+            $.getJSON( "./stocks.json", function( json ) {
+                  
+               }).done(function( data ) {
+                  $.each(data.Sectors, function( item ) {
+                     $('#stocks').append("<div>" + item + "</div>");
+                  })
+               });
+         });
+      </script> 
+  
+   </head>
+	
+   <body>
+      <h1>Hello</h1>
+   </body>
+	
+</html>
+

@@ -28,13 +28,46 @@ def read_company company, sector, sub_sector
 
     key_statistics = Nokogiri::HTML(open("http://finance.yahoo.com/q/ks?s=#{symbol}+Key+Statistics"))
 
-    market_value = key_statistics.css("#yfi_rt_quote_summary").css("div")[4].css("span")[0].text.split(',').join.to_f
+    quote_summary = key_statistics.css("#yfi_rt_quote_summary")
 
-    if market_value > 2
+    if quote_summary.nil?
+        return
+    end 
+
+    quote_summary_div = quote_summary.css("div")[4]
+
+    if quote_summary_div.nil?
         return
     end
 
-    book_value_per_share = key_statistics.css("table")[18].css("tr")[7].css("td")[1].text.split(',').join.to_f
+    quote_summary_div_span = quote_summary_div.css("span")[0]
+
+    if quote_summary_div_span.nil?
+        return
+    end
+
+    market_value = quote_summary_div_span.text.split(',').join.to_f
+
+    if market_value > 2 || market_value <= 0
+        return
+    end
+
+    tables = key_statistics.css("table")[18]
+    if tables.nil? 
+        return 
+    end
+
+    tables_tr = tables.css("tr")[7]
+    if tables_tr.nil? 
+        return 
+    end
+
+    tables_tr_td = tables_tr.css("td")[1]
+    if tables_tr_td.nil? 
+        return 
+    end
+
+    book_value_per_share = tables_tr_td.text.split(',').join.to_f
 
     if book_value_per_share < market_value
         return
@@ -99,6 +132,8 @@ def read_company company, sector, sub_sector
         "difference_to_average" => difference_to_average,
         "website" => website
     }
+
+    puts "CompanyHash As String " + company_hash.to_s
 
     puts "CompanyHash: " + company_hash.to_json
 
