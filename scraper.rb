@@ -84,31 +84,31 @@ def read_company company, sector, sub_sector
 
     strong_elements = income_statement.css("strong")
 
-    assets_2015 = strong_elements[7].text.split(',').join.to_f unless strong_elements[7].nil?
-    liabilities_2015 = strong_elements[16].text.split(',').join.to_f unless strong_elements[16].nil?
+    assets_last_year = strong_elements[7].text.split(',').join.to_f unless strong_elements[7].nil?
+    liabilities_last_year = strong_elements[16].text.split(',').join.to_f unless strong_elements[16].nil?
 
-    if assets_2015.nil? || liabilities_2015.nil?
+    if assets_last_year.nil? || liabilities_last_year.nil?
         return
     end
 
-    if (assets_2015 - (2.0 * liabilities_2015)) < 0
+    if (assets_last_year - (2.0 * liabilities_last_year)) < 0
         return
     end
     
-    assets_2014 = strong_elements[8].text.split(',').join.to_f
-    assets_2013 = strong_elements[9].text.split(',').join.to_f
+    assets_two_years = strong_elements[8].text.split(',').join.to_f
+    assets_three_years = strong_elements[9].text.split(',').join.to_f
 
-    if assets_2015.nil? || assets_2015 < 0
+    if assets_last_year.nil? || assets_last_year < 0
         return
     end
 
     average_assets = 0
     difference_to_average = 0
     
-    if !assets_2014.nil? && !assets_2013.nil?
-        average_assets = ((assets_2015 + assets_2014 + assets_2013) / 3).round(2)
+    if !assets_two_years.nil? && !assets_three_years.nil?
+        average_assets = ((assets_last_year + assets_two_years + assets_three_years) / 3).round(2)
 
-        difference_to_average = (assets_2015 - average_assets).round(2)
+        difference_to_average = (assets_last_year - average_assets).round(2)
     end
 
     if difference_to_average <= 0
@@ -128,8 +128,8 @@ def read_company company, sector, sub_sector
         "sub_sector" => sub_sector,
         "book_value_per_share" => book_value_per_share,
         "percentage_of_book_value" => percentage_of_book_value,
-        "assets_2015" => assets_2015,
-        "liabilities_2015" => liabilities_2015,
+        "assets_last_year" => assets_last_year,
+        "liabilities_last_year" => liabilities_last_year,
         "difference_to_average" => difference_to_average,
         "website" => website
     }
