@@ -3,6 +3,7 @@ require 'open-uri'
 require 'json'
 
 @file
+@companies = []
 
 def read_doc doc
     sectors_table = doc.css("body table")[4]
@@ -133,34 +134,21 @@ def read_company company, sector, sub_sector
         "website" => website
     }
 
-    puts "CompanyHash As String " + company_hash.to_s
+    @companies << company_hash
 
     puts "CompanyHash: " + company_hash.to_json
-
-    return company_hash
 end
 
 def read_companies companies, sector, sub_sector
     companies.shift
 
-    companies_array = []
-
     companies.each do |company|
-        company_hash = read_company company, sector, sub_sector
-
-        if !company_hash.nil?
-            companies_array << company_hash
-        end
+        read_company company, sector, sub_sector
     end
-
-    return companies_array
-
 end
 
 def read_sub_sector sub_sector, sector
     link = sub_sector.css("td a")
-    
-    companies = []
 
     if !link[0].nil?
         name = link[0].text + "\n"
@@ -176,26 +164,15 @@ def read_sub_sector sub_sector, sector
             companies.shift
         }
         
-        companies = read_companies(companies, sector, name)
+       read_companies(companies, sector, name)
     end
-
-    sector_hash = {
-        "#{name}" => companies
-    }
-
-    return sector_hash
-
 end
 
 def read_sub_sectors sub_sectors, sector
-    
-    pulled_sub_sectors = []
 
     sub_sectors.each do |sub_sector|
-        pulled_sub_sectors << read_sub_sector(sub_sector, sector)
+        read_sub_sector(sub_sector, sector)
     end
-
-    return pulled_sub_sectors
 end
 
 def read_sector sector_href
@@ -209,27 +186,18 @@ def read_sector sector_href
 
     sub_sectors = read_doc(sector_doc)
 
-    pulled_sub_sectors = read_sub_sectors(sub_sectors, name)
-
-    sub_sectors_hash  = {
-        "#{name}" => pulled_sub_sectors
-    }
-
-    return sub_sectors_hash
-    
+    read_sub_sectors(sub_sectors, name)
 end
 
 def read_sectors sectors
     sectors.shift
 
-    pulled_sectors = []
-
     sectors.each do |sector|
-        pulled_sectors << read_sector(sector)
+        read_sector(sector)
     end
 
     stocks = {
-        "Sectors" => pulled_sectors
+        "Companies" => @companies
     }
 
     @file = File.open("stocks.json", 'w') 
