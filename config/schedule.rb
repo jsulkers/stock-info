@@ -19,10 +19,6 @@
 
 # Learn more: http://github.com/javan/whenever
 
-# every 1.day, :at => '3:30 am' do
-#   runner "Scraper.run"
-# end
-
-every 1.minutes do
-	rake "read"
+every 1.day, :at => '3:30 am' do
+  runner "Scraper.run"
 end
