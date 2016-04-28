@@ -20,5 +20,5 @@
 # Learn more: http://github.com/javan/whenever
 
 every 1.day, :at => '3:30 am' do
-  runner "Scraper.run"
+  rake "read"
 end
