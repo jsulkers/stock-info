@@ -1,11 +1,23 @@
 require 'json'
 require 'erb'
 
-file = File.read('stocks.json')
+class Reader
 
-@company_json = JSON.parse(file)
+	def initialize
+		@filename = "stocks.json"
+	end
+	def run
+		puts "Reading..."
+		file = File.read("#{@filename}")
 
-template_file = File.open("template.html.erb", 'r').read
-erb = ERB.new(template_file)
+		@company_json = JSON.parse(file)
 
-File.open("converted.html", 'w+') { |file| file.write(erb.result(binding)) }
+		template_file = File.open("template.html.erb", 'r').read
+		erb = ERB.new(template_file)
+
+		@read_date = DateTime.now.strftime("%a %b %d - %H:%M")
+		File.open("index.html", 'w+') { |file| file.write(erb.result(binding)) }
+
+		puts "Done."
+	end
+end
