@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stocks</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+	<div class="container">
+		<div class="col-md-3 col-md-offset-4 generated_date">
+			<div>Generated @<%= @generated_date %> </div>
+			<div>Last read @<%= @read_date %></div>
+		</div>
+		<div class="companies">
+			<% @company_json["Companies"].each do |company| %>
+			<div class="col-md-3 col-md-offset-4 company">
+				<div class="company-name"><%= company["name"] %></div>
+				<div><%= company["symbol"] %></div>
+				<div class="sector"><%= company["sector"] %>/<%= company["sub_sector"] %></div>
+				<div>$<%= company["market_value"] %></div>
+				<div><%= company["percentage_of_book_value"]%>% of $<%= company["book_value_per_share"] %> book value</div>
+				<div>P/E: <%= company["pe"] %></div>
+				<div><%= company["assets_last_year"] %> <span class="asset-explanations">last year's assets </div>
+				<div><%= company["liabilities_last_year"] %> <span class="asset-explanations">last year's liabilities </div>
+				<div>$<%= company["difference_to_average"] %> <span class="asset-explanations">three year asset difference</span></div>
+				<div class="site"><a href=<%= company["website"]%> class="button"><span class="visit_site">site<span></a></div>
+			</div>
+		<% end %>
+		</div>  
+	</div>
+</body>
+</html>
