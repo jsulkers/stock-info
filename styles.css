@@ -3,7 +3,7 @@
 }
 
 .company-name {
-	font-size: 1.2em;
+	font-size: 1.25em;
 }
 
 .sector {
@@ -28,4 +28,26 @@
 
 .site {
 	padding-top:10px;
+
+}
+
+.stock-values {
+	font-size: 1.3em;
+}
+
+a {
+	color: black;
+}
+
+a:visited {
+  color: black;
+}
+
+a:active {
+  color: black;
+}
+
+a:hover {
+  color: black;
+  text-decoration: none;
 }

@@ -21,12 +21,12 @@
 				<div><%= company["symbol"] %></div>
 				<div class="sector"><%= company["sector"] %>/<%= company["sub_sector"] %></div>
 				<div>$<%= company["market_value"] %></div>
-				<div><%= company["percentage_of_book_value"]%>% of $<%= company["book_value_per_share"] %> book value</div>
+				<div class="stock-values"><%= company["percentage_of_book_value"]%>% of $<%= company["book_value_per_share"] %> book value</div>
 				<div>P/E: <%= company["pe"] %></div>
 				<div><%= company["assets_last_year"] %> <span class="asset-explanations">last year's assets </div>
 				<div><%= company["liabilities_last_year"] %> <span class="asset-explanations">last year's liabilities </div>
 				<div>$<%= company["difference_to_average"] %> <span class="asset-explanations">three year asset difference</span></div>
-				<div class="site"><a href=<%= company["website"]%> class="button"><span class="visit_site">site<span></a></div>
+				<div class="site"><a href=<%= company["website"]%> class="button"><span class="visit_site">visit site<span></a></div>
 			</div>
 		<% end %>
 		</div>  
