@@ -1,5 +1,6 @@
 require 'json'
 require 'erb'
+require 'date'
 
 class Reader
 
@@ -21,3 +22,6 @@ class Reader
 		puts "Done."
 	end
 end
+
+reader = Reader.new
+reader.run
