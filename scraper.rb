@@ -11,6 +11,10 @@ class Scraper
         @file
         @companies = []
         @generated_date = DateTime.now.strftime("%a %b %d - %H:%M")
+
+        file = File.read("mystocks")
+        @mystocks = file.split(",")
+
         puts "Scraper initialized @ #{@generated_date}."
     end
 
@@ -140,7 +144,8 @@ class Scraper
             "assets_last_year" => assets_last_year,
             "liabilities_last_year" => liabilities_last_year,
             "difference_to_average" => difference_to_average,
-            "website" => website
+            "website" => website,
+            "purchased" => @mystocks.include?("#{symbol}")
         }
 
         @companies << company_hash
@@ -221,6 +226,7 @@ class Scraper
 
         sectors = read_doc doc
         read_sectors sectors
+
         puts "Scrape complete."
     end
 end
