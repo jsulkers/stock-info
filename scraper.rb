@@ -62,10 +62,12 @@ class Scraper
 
         market_value = quote_summary_div_span.text.split(',').join.to_f
 
-        if market_value > 2 || market_value <= 0
-            return
+        if !@mystocks.include?("#{symbol}")
+            if market_value > 2 || market_value <= 0
+                return
+            end
         end
-
+            
         tables = key_statistics.css("table")[18]
         if tables.nil? 
             return 
@@ -77,18 +79,23 @@ class Scraper
         end
 
         tables_tr_td = tables_tr.css("td")[1]
+        
         if tables_tr_td.nil? 
             return 
         end
 
         book_value_per_share = tables_tr_td.text.split(',').join.to_f
 
-        if book_value_per_share < market_value
-            return
+        if !@mystocks.include?("#{symbol}")
+            if book_value_per_share < market_value
+                return
+            end
         end
 
-        if market_value.to_f > (book_value_per_share * 0.66)
-            return
+        if !@mystocks.include?("#{symbol}")
+            if market_value.to_f > (book_value_per_share * 0.66)
+                return
+            end
         end
 
         percentage_of_book_value = (market_value.to_f / book_value_per_share.to_f).round(2)

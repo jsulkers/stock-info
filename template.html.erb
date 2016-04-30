@@ -18,7 +18,7 @@
 			<% @company_json["Companies"].each do |company| %>
 			<div class="col-lg-3 col-lg-offset-4 company">
 				<div class="company-name"><%= company["name"] %>
-					<% if company["purchased"] %> 
+					<% if company["purchased"] %>
 						<span>****</span>
 					<% end %>
 				</div>
