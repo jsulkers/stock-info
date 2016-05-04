@@ -6,4 +6,3 @@ scraper.run
 
 reader = Reader.new
 reader.run
-
