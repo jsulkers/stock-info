@@ -5,7 +5,7 @@ require 'date'
 class Reader
 
 	def initialize
-		@filename = "stocks.json"
+		@filename = "../data/stocks.json"
 	end
 	def run
 		puts "Reading..."
@@ -13,11 +13,11 @@ class Reader
 
 		@company_json = JSON.parse(file)
 
-		template_file = File.open("template.html.erb", 'r').read
+		template_file = File.open("../views/template.html.erb", 'r').read
 		erb = ERB.new(template_file)
 
 		@read_date = DateTime.now.strftime("%a %b %d - %H:%M")
-		File.open("index.html", 'w+') { |file| file.write(erb.result(binding)) }
+		File.open("../views/index.html", 'w+') { |file| file.write(erb.result(binding)) }
 
 		puts "Done."
 	end
