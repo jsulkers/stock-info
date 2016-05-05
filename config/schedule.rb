@@ -18,6 +18,6 @@
 # end
 
 # Learn more: http://github.com/javan/whenever
-every 1.day, at: '4:30 am' do
+every 2.hours do
   rake 'read'
 end
