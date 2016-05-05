@@ -35,7 +35,7 @@ class Scraper
     symbol = symbol.to_s
     pe = pe.to_s
 
-    return if pe.eql? 'NA'
+    return if pe.eql? 'NA' unless @mystocks.include?(symbol.to_s)
 
     key_statistics = Nokogiri::HTML(open("http://finance.yahoo.com/q/ks?s=#{symbol}+Key+Statistics"))
 
