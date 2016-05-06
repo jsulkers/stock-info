@@ -14,3 +14,6 @@ gem 'whenever'
 # https://github.com/bbatsov/rubocop
 gem 'rubocop'
 
+# https://github.com/TwP/logging
+gem 'logging'
+

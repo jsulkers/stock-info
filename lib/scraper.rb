@@ -2,13 +2,22 @@ require 'nokogiri'
 require 'open-uri'
 require 'json'
 require 'date'
+require 'logging'
 
 # Scraper class pulls specific stock information from yahoo
 # This information is stored in a .json file for consumption
 # by the reader to create an index.html file.
 class Scraper
-  def initialize
-    puts 'Initializing scraper...'
+  @logger
+
+  def initialize  
+    @logger = Logging.logger['scraper_logger']
+    @logger.level = :info
+    @logger.add_appenders \
+    Logging.appenders.stdout,
+    Logging.appenders.file('./logs/scraper.log')
+
+    @logger.info 'Initializing scraper...'
     @filename = './data/stocks.json'
     @companies = []
     @generated_date = DateTime.now.strftime('%a %b %d - %H:%M')
@@ -16,7 +25,7 @@ class Scraper
     file = File.read('./data/mystocks')
     @mystocks = file.split(',')
 
-    puts "Scraper initialized @ #{@generated_date}."
+    @logger.info "Scraper initialized @ #{@generated_date}."
   end
 
   def read_doc(doc)
@@ -131,7 +140,7 @@ class Scraper
 
     @companies << company_hash
 
-    puts 'CompanyHash: ' + company_hash.to_json
+    @logger.info 'CompanyHash: ' + company_hash.to_json
   end
 
   def read_companies(companies, sector, sub_sector)
@@ -204,12 +213,12 @@ class Scraper
   end
 
   def run
-    puts 'Running scraper...'
+    @logger.info 'Running scraper...'
     doc = Nokogiri::HTML(open('https://biz.yahoo.com/p/s_conameu.html'))
 
     sectors = read_doc doc
     read_sectors sectors
 
-    puts 'Scrape complete.'
+    @logger.info 'Scrape complete.'
   end
 end
