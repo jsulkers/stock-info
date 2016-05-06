@@ -9,11 +9,11 @@ require 'date'
 class Scraper
   def initialize
     puts 'Initializing scraper...'
-    @filename = '../data/stocks.json'
+    @filename = './data/stocks.json'
     @companies = []
     @generated_date = DateTime.now.strftime('%a %b %d - %H:%M')
 
-    file = File.read('../data/mystocks')
+    file = File.read('./data/mystocks')
     @mystocks = file.split(',')
 
     puts "Scraper initialized @ #{@generated_date}."
