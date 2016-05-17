@@ -1,6 +1,8 @@
 # A sample Gemfile
 source 'https://rubygems.org'
 
+gem 'json'
+
 gem 'rake'
 
 # http://www.nokogiri.org/
